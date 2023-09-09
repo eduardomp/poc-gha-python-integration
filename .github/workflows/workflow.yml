@@ -1,0 +1,39 @@
+name: Python integration workflow
+  
+on:
+  workflow_dispatch: 
+
+env:
+  EMAIL_ADMIN: "admin@test.com"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Load .env file
+        uses: aarcangeli/load-dotenv@v1.0.0
+        with:
+          filenames: |
+            .env.mails
+          quiet: false
+          if-file-not-found: error
+
+      - name: Show .env value
+        run: |
+          echo "The email list:"
+          echo "${{ env.email_list }}"
+
+      - name: Set email variables
+        run: |
+          echo "EMAIL_LIST=${{ env.email_list }}" >> $GITHUB_ENV
+      
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+      
+      - name: Print emails
+        run: python print_emails.py
